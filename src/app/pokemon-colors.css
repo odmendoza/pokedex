@@ -35,7 +35,9 @@
 .pokemon-bg-blue { background-color: var(--pokemon-blue); }
 
 .pokemon-text-primary { color: var(--pokemon-yellow); }
+.pokemon-text-primary:hover { color: var(--pokemon-blue); }
 .pokemon-text-blue { color: var(--pokemon-blue); }
+.pokemon-text-blue:hover { color: var(--pokemon-yelow); }
 
 .pokemon-border-primary { border-color: var(--pokemon-yellow); }
 .pokemon-border-blue { border-color: var(--pokemon-blue); }

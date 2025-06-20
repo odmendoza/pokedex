@@ -18,7 +18,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className='pokemon-bg-blue/10 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50'>
+    <nav className='pokemon-bg-blue/10 backdrop-blur supports-[backdrop-filter]:bg-white/10 sticky top-0 z-50'>
       <div className='container mx-auto px-4 py-3'>
         <div className='flex items-center justify-between'>
           {/* Logo */}
@@ -41,7 +41,7 @@ export default function Navbar() {
               <Button
                 variant='ghost'
                 size='sm'
-                className='pokemon-text-blue hover:pokemon-bg-primary'
+                className='pokemon-text-primary pokemon-hover-yellow'
               >
                 <Home className='w-4 h-4 mr-2' />
                 Inicio
@@ -51,7 +51,7 @@ export default function Navbar() {
               <Button
                 variant='ghost'
                 size='sm'
-                className='pokemon-text-blue hover:pokemon-bg-primary'
+                className='pokemon-text-primary pokemon-hover-yellow'
               >
                 <Zap className='w-4 h-4 mr-2' />
                 Pokedex
