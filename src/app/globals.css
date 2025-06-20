@@ -118,5 +118,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image: url('../../public/wallpaper.jpg'); /* Cambia la ruta según tu imagen */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
   }
 }

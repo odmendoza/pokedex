@@ -1,0 +1,45 @@
+/* Paleta de Colores Pokémon Oficial */
+
+:root {
+  /* Colores Primarios */
+  --pokemon-yellow: #FFCB05;      /* Amarillo principal del logo */
+  --pokemon-yellow-light: #FFD700; /* Amarillo más claro */
+  --pokemon-yellow-dark: #E6B800;  /* Amarillo más oscuro */
+  
+  /* Colores Azules */
+  --pokemon-blue: #3D7DCA;         /* Azul principal del contorno */
+  --pokemon-blue-light: #5B9BD5;   /* Azul claro */
+  --pokemon-blue-dark: #2A5AA0;    /* Azul oscuro para sombras */
+  --pokemon-blue-navy: #1E3A5F;    /* Azul marino para texto */
+  
+  /* Colores Complementarios */
+  --pokemon-white: #FFFFFF;        /* Blanco puro */
+  --pokemon-gray-light: #F5F5F5;   /* Gris muy claro */
+  --pokemon-gray: #CCCCCC;         /* Gris medio */
+  --pokemon-gray-dark: #666666;    /* Gris oscuro */
+  --pokemon-black: #000000;        /* Negro para contrastes */
+  
+  /* Colores de Estado */
+  --pokemon-red: #FF6B6B;          /* Rojo para errores/eliminar */
+  --pokemon-green: #51CF66;        /* Verde para éxito */
+  --pokemon-orange: #FF922B;       /* Naranja para advertencias */
+  
+  /* Gradientes */
+  --pokemon-gradient-primary: linear-gradient(135deg, var(--pokemon-yellow) 0%, var(--pokemon-yellow-dark) 100%);
+  --pokemon-gradient-blue: linear-gradient(135deg, var(--pokemon-blue-light) 0%, var(--pokemon-blue-dark) 100%);
+  --pokemon-gradient-background: linear-gradient(135deg, var(--pokemon-blue-light) 0%, var(--pokemon-blue) 50%, var(--pokemon-blue-dark) 100%);
+}
+
+/* Clases de Utilidad */
+.pokemon-bg-primary { background-color: var(--pokemon-yellow); }
+.pokemon-bg-blue { background-color: var(--pokemon-blue); }
+
+.pokemon-text-primary { color: var(--pokemon-yellow); }
+.pokemon-text-blue { color: var(--pokemon-blue); }
+
+.pokemon-border-primary { border-color: var(--pokemon-yellow); }
+.pokemon-border-blue { border-color: var(--pokemon-blue); }
+
+/* Efectos de Hover */
+.pokemon-hover-yellow:hover { background-color: var(--pokemon-yellow-light); }
+.pokemon-hover-blue:hover { background-color: var(--pokemon-blue-light); }
