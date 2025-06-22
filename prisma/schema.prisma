@@ -1,0 +1,30 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Pokemon {
+  id                  String   @id @default(uuid()) @map("_id") @db.Uuid
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  name                String
+  number              String   @unique
+  pokemonPhotoUrl     String?
+  type                String[]
+  description         String?
+  height              Float?
+  weight              Float?
+  maleGenderRatio     Float?
+  femaleGenderRatio   Float?
+  abilities           String[]
+  eggGroups           String[]
+  evolutionDescription String?
+  evolutionPhotoUrl   String?
+
+  @@index([name])
+}

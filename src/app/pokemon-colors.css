@@ -33,6 +33,7 @@
 /* Clases de Utilidad */
 .pokemon-bg-primary { background-color: var(--pokemon-yellow); }
 .pokemon-bg-blue { background-color: var(--pokemon-blue); }
+.pokemon-bg-orange { background-color: var(--pokemon-orange); }
 
 .pokemon-text-primary { color: var(--pokemon-yellow); }
 .pokemon-text-primary:hover { color: var(--pokemon-blue); }

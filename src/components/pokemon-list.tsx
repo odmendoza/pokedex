@@ -5,9 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Edit, Trash2, Eye, Search } from 'lucide-react';
-import Link from 'next/link';
+import { Search } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface Pokemon {
   id: number;
@@ -29,6 +29,7 @@ export default function PokemonList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [customPokemons, setCustomPokemons] = useState<Pokemon[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     fetchPokemons();
@@ -44,7 +45,7 @@ export default function PokemonList() {
       const data = await res.json();
 
       const pokemonDetails = await Promise.all(
-        data.results.map(async (pokemon: any) => {
+        data.results.map(async (pokemon: Pokemon) => {
           const detailRes = await fetch(pokemon.url);
           return detailRes.json();
         })
@@ -65,13 +66,14 @@ export default function PokemonList() {
     }
   };
 
-  const deletePokemon = (id: number) => {
-    const updated = customPokemons.filter((p) => p.id !== id);
-    setCustomPokemons(updated);
-    localStorage.setItem('customPokemons', JSON.stringify(updated));
-  };
+  // const deletePokemon = (id: number) => {
+  //   const updated = customPokemons.filter((p) => p.id !== id);
+  //   setCustomPokemons(updated);
+  //   localStorage.setItem('customPokemons', JSON.stringify(updated));
+  // };
 
-  const allPokemons = [...customPokemons, ...pokemons];
+  // const allPokemons = [...customPokemons, ...pokemons];
+  const allPokemons = [...pokemons];
   const filteredPokemons = allPokemons.filter((pokemon) =>
     pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -86,63 +88,49 @@ export default function PokemonList() {
         <div className='relative'>
           <Search className='absolute left-3 top-3 h-4 w-4 text-gray-400' />
           <Input
-            placeholder='Buscar pokémons...'
+            placeholder='Buscar pokémons ...'
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className='pl-10'
+            className='pl-10 bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500'
           />
         </div>
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
         {filteredPokemons.map((pokemon) => (
-          <Card key={pokemon.id} className='hover:shadow-lg transition-shadow'>
+          <Card
+            key={pokemon.id}
+            onClick={() => router.push(`/pokemon/${pokemon.id}`)}
+            className='hover:shadow-lg transition-shadow'
+          >
             <CardHeader className='text-center'>
-              <div className='mx-auto mb-4'>
+              <div className='mx-auto'>
                 <Image
                   src={
                     pokemon.sprites?.front_default ||
                     '/placeholder.svg?height=96&width=96'
                   }
                   alt={pokemon.name}
-                  width={96}
-                  height={96}
+                  width={120}
+                  height={120}
                   className='mx-auto'
                 />
               </div>
               <CardTitle className='capitalize'>{pokemon.name}</CardTitle>
               <div className='flex flex-wrap gap-1 justify-center'>
                 {pokemon.types?.map((type) => (
-                  <Badge key={type.type.name} variant='secondary'>
+                  <Badge
+                    key={type.type.name}
+                    variant='secondary'
+                    className='uppercase'
+                  >
                     {type.type.name}
                   </Badge>
                 ))}
               </div>
             </CardHeader>
             <CardContent>
-              <div className='flex gap-2'>
-                <Link href={`/pokemon/${pokemon.id}`} className='flex-1'>
-                  <Button variant='outline' size='sm' className='w-full'>
-                    <Eye className='w-4 h-4 mr-1' />
-                    Ver
-                  </Button>
-                </Link>
-                <Link href={`/pokemon/edit/${pokemon.id}`} className='flex-1'>
-                  <Button variant='outline' size='sm' className='w-full'>
-                    <Edit className='w-4 h-4 mr-1' />
-                    Editar
-                  </Button>
-                </Link>
-                {customPokemons.some((p) => p.id === pokemon.id) && (
-                  <Button
-                    variant='destructive'
-                    size='sm'
-                    onClick={() => deletePokemon(pokemon.id)}
-                  >
-                    <Trash2 className='w-4 h-4' />
-                  </Button>
-                )}
-              </div>
+              <p className='text-center font-bold'>N° {pokemon.id}</p>
             </CardContent>
           </Card>
         ))}

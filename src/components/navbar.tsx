@@ -18,7 +18,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className='pokemon-bg-blue/10 backdrop-blur supports-[backdrop-filter]:bg-white/10 sticky top-0 z-50'>
+    <nav className='pokemon-bg-blue/10 backdrop-blur supports-[backdrop-filter]:bg-white/10 sticky top-0 z-50 rounded-lg shadow-md m-2 md:m-4'>
       <div className='container mx-auto px-4 py-3'>
         <div className='flex items-center justify-between'>
           {/* Logo */}
@@ -88,7 +88,7 @@ export default function Navbar() {
               <Button
                 variant='ghost'
                 size='sm'
-                className='w-full justify-start hover:bg-blue-50'
+                className='w-full justify-start pokemon-text-primary pokemon-hover-yellow'
               >
                 <Home className='w-4 h-4 mr-3' />
                 Inicio
@@ -98,7 +98,7 @@ export default function Navbar() {
               <Button
                 variant='ghost'
                 size='sm'
-                className='w-full justify-start hover:bg-blue-50'
+                className='w-full justify-start pokemon-text-primary pokemon-hover-yellow'
               >
                 <List className='w-4 h-4 mr-3' />
                 Lista de Pokémons
@@ -111,7 +111,7 @@ export default function Navbar() {
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
         <div
-          className='md:hidden fixed inset-0 bg-black bg-opacity-20 z-40'
+          className='md:hidden fixed inset-0 bg-opacity-20 z-40'
           onClick={closeMenu}
           aria-hidden='true'
         />
