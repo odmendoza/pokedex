@@ -1,4 +1,4 @@
-import Pokedex from '@/components/pokedex';
+import Pokedex from '@/components/pokemon/pokedex';
 
 export default function Home() {
   return (

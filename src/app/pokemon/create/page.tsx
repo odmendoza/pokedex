@@ -1,4 +1,4 @@
-import PokemonForm from '@/components/pokemon-form';
+import PokemonForm from '@/components/pokemon/pokemon-form';
 
 export default function CreatePokemonPage() {
   return (

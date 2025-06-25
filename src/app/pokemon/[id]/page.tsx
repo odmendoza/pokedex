@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import PokemonDetail from '@/components/pokemon-detail';
+import PokemonDetail from '@/components/pokemon/pokemon-detail';
 
 interface PokemonPageProps {
   params: { id: string };
