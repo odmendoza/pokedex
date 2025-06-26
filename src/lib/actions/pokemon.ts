@@ -3,9 +3,8 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
-import { pokemonSchema, updatePokemonSchema } from '@/lib/schemas/pokemon.schema'
+import { updatePokemonSchema } from '@/lib/schemas/pokemon.schema'
 import { Pokemon } from '../definitions/pokemon'
-import { log } from 'console'
 
 type FormState = {
     errors?: {
@@ -34,32 +33,63 @@ export async function createPokemon(data: Pokemon): Promise<{
     errors?: { [key: string]: string[] }
 }> {
 
-    try {  
+    try {
         const response = await fetch('http://localhost:3000/api/pokemon', {
             method: 'POST',
             body: JSON.stringify(data),
         });
 
-        console.log('Response from API:', response);
-
         if (response.ok) {
             return {
-            icon: 'success',
-            message: 'Pokemon created successfully.',
-            data: await response.json() as Pokemon,
+                icon: 'success',
+                message: 'Pokemon created successfully.',
+                data: await response.json() as Pokemon,
             }
         } else {
             return {
                 icon: 'error',
                 message: response.statusText || 'Failed to create Pokemon.',
             }
-        }   
-        
+        }
+
     } catch (error) {
         console.error('Database Error:', error)
         return {
             icon: 'error',
             message: 'Database Error: Failed to Create Pokemon.',
+        }
+    }
+}
+
+export async function getRandomPokemonFromAPI(): Promise<{
+    message: string
+    icon: string
+    data?: Pokemon | null
+    errors?: { [key: string]: string[] }
+}> {
+    try {
+        const response = await fetch('http://localhost:3000/api/pokemon/random', {
+            method: 'GET',
+        });
+
+        if (response.ok) {
+            return {
+                icon: 'success',
+                message: 'Pokemon retrieved successfully.',
+                data: await response.json() as Pokemon
+            }
+        } else {
+            return {
+                icon: 'error',
+                message: response.statusText || 'Failed to retrieve Pokemon.',
+            }
+        }
+
+    } catch (error) {
+        console.error('Database Error:', error)
+        return {
+            icon: 'error',
+            message: 'Database Error: Failed to retrieve Pokemon.',
         }
     }
 }
