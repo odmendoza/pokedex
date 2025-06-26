@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import { pokemonSchema, updatePokemonSchema } from '@/lib/schemas/pokemon.schema'
+import { Pokemon } from '../definitions/pokemon'
+import { log } from 'console'
 
 type FormState = {
     errors?: {
@@ -25,52 +27,41 @@ type FormState = {
     message?: string | null
 }
 
-export async function createPokemon(prevState: FormState, formData: FormData): Promise<FormState> {
-    const rawFormData = Object.fromEntries(formData.entries()) as { [k: string]: FormDataEntryValue }
+export async function createPokemon(data: Pokemon): Promise<{
+    message: string
+    icon: string
+    data?: Pokemon
+    errors?: { [key: string]: string[] }
+}> {
 
-    // Handle array fields (type, abilities, eggGroups)
-    const type = formData.getAll('type').filter(Boolean) as string[]
-    const abilities = formData.getAll('abilities').filter(Boolean) as string[]
-    const eggGroups = formData.getAll('eggGroups').filter(Boolean) as string[]
+    try {  
+        const response = await fetch('http://localhost:3000/api/pokemon', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
 
-    const dataToValidate = {
-        ...rawFormData,
-        type,
-        abilities,
-        eggGroups,
-        height: rawFormData.height === '' ? undefined : rawFormData.height,
-        weight: rawFormData.weight === '' ? undefined : rawFormData.weight,
-        maleGenderRatio: rawFormData.maleGenderRatio === '' ? undefined : rawFormData.maleGenderRatio,
-        femaleGenderRatio: rawFormData.femaleGenderRatio === '' ? undefined : rawFormData.femaleGenderRatio,
-    }
+        console.log('Response from API:', response);
 
-    const validatedFields = pokemonSchema.safeParse(dataToValidate)
-
-    if (!validatedFields.success) {
-        return {
-            errors: validatedFields.error.flatten().fieldErrors,
-            message: 'Missing Fields. Failed to Create Pokemon.',
-        }
-    }
-
-    try {
-        await prisma.pokemon.create({
-            data: {
-                ...validatedFields.data,
-                type: validatedFields.data.type || [],
-                abilities: validatedFields.data.abilities || [],
-                eggGroups: validatedFields.data.eggGroups || [],
-            },
-        })
+        if (response.ok) {
+            return {
+            icon: 'success',
+            message: 'Pokemon created successfully.',
+            data: await response.json() as Pokemon,
+            }
+        } else {
+            return {
+                icon: 'error',
+                message: response.statusText || 'Failed to create Pokemon.',
+            }
+        }   
+        
     } catch (error) {
         console.error('Database Error:', error)
         return {
+            icon: 'error',
             message: 'Database Error: Failed to Create Pokemon.',
         }
     }
-
-    revalidatePath('/pokemon')
-    redirect('/pokemon')
 }
 
 export async function updatePokemon(id: string, prevState: FormState, formData: FormData): Promise<FormState> {

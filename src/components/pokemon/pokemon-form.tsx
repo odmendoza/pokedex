@@ -1,286 +1,444 @@
 'use client';
 
-import { useActionState } from 'react';
 import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { createPokemon, updatePokemon } from '@/lib/actions/pokemon';
-import type { Pokemon } from '@prisma/client'; // Import Prisma's generated type
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  BarcodeIcon,
+  CircleDollarSignIcon,
+  TextIcon,
+  TicketsIcon,
+  TimerIcon,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useLoading } from '@/lib/store/loading';
+import { Pokemon } from '@/lib/definitions/pokemon';
+import { pokemonSchema } from '@/lib/schemas/pokemon.schema';
+import { toast } from 'sonner';
+import { createPokemon, updatePokemon } from '@/lib/actions/pokemon';
+import { useState } from 'react';
 
 interface PokemonFormProps {
-  pokemon?: Pokemon; // Optional for editing
-  formType: 'create' | 'edit';
+  pokemon?: Pokemon;
+  formType?: 'create' | 'edit';
 }
 
-export function PokemonForm({ pokemon, formType }: PokemonFormProps) {
+export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
+  const { loading, setLoading } = useLoading();
   const router = useRouter();
-  const initialState = { message: null, errors: {} };
 
-  const actionFunction =
-    formType === 'create'
-      ? createPokemon
-      : async (prevState: typeof initialState, formData: FormData) => {
-          if (!pokemon?.id) {
-            // This case should ideally not happen if formType is 'edit' and pokemon is undefined
-            return {
-              ...prevState,
-              message: 'Error: Pokemon ID is missing for update.',
-            };
-          }
-          return updatePokemon(pokemon.id, prevState, formData);
-        };
-
-  const [state, formAction, isPending] = useActionState(
-    actionFunction,
-    initialState
+  const [typeInput, setTypeInput] = useState((pokemon?.type || []).join(', '));
+  const [abilitiesInput, setAbilitiesInput] = useState(
+    (pokemon?.abilities || []).join(', ')
   );
+  const [eggGroupsInput, setEggGroupsInput] = useState(
+    (pokemon?.eggGroups || []).join(', ')
+  );
+
+  const form = useForm<z.infer<typeof pokemonSchema>>({
+    resolver: zodResolver(pokemonSchema),
+    defaultValues: {
+      name: pokemon?.name || undefined,
+      number: pokemon?.number || undefined,
+      pokemonPhotoUrl: pokemon?.pokemonPhotoUrl || undefined,
+      type: pokemon?.type || [],
+      description: pokemon?.description || undefined,
+      height: pokemon?.height || undefined,
+      weight: pokemon?.weight || undefined,
+      maleGenderRatio: pokemon?.maleGenderRatio || undefined,
+      femaleGenderRatio: pokemon?.femaleGenderRatio || undefined,
+      abilities: pokemon?.abilities || [],
+      eggGroups: pokemon?.eggGroups || [],
+      evolutionDescription: pokemon?.evolutionDescription || undefined,
+      evolutionPhotoUrl: pokemon?.evolutionPhotoUrl || undefined,
+    },
+  });
 
   const handleCancel = () => {
     router.push('/pokemon');
   };
 
+  async function onSubmit(data: z.infer<typeof pokemonSchema>) {
+    setLoading(true);
+    try {
+      if (formType === 'edit' && pokemon) {
+        // const response = await updatePokemon(subscription.id, data);
+        // if (response.message && response.icon) {
+        toast('Actualizado correctamente', {
+          // icon: response.icon,
+          icon: 'success',
+          description: 'La suscripción se ha actualizado correctamente.',
+          duration: 5000,
+        });
+      } else {
+        const response = await createPokemon(data as Pokemon);
+        if (response.message && response.icon) {
+          if (response.icon === 'success') {
+            toast.success(response.message);
+            router.push(`/pokemon/${response.data?.number}`);
+          }
+          if (response.icon === 'error') {
+            toast.error(response.message);
+          }
+        }
+      }
+    } catch (error) {
+      toast('Error al guardar el Pokémon', {
+        icon: 'error',
+        description: 'Ha ocurrido un error al guardar el Pokémon.',
+        duration: 5000,
+      });
+      console.error('Error al guardar el Pokémon:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <Card className='w-full max-w-2xl mx-auto'>
-      <CardHeader>
-        <CardTitle>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={'w-full md:w-2/3 lg:3/4 flex flex-col mx-auto p-8 md:p-4'}
+      >
+        <h1 className='text-2xl font-semibold py-4 pokemon-text-primary'>
           {formType === 'create'
-            ? 'Nuevo Pokemon'
-            : `Editar Pokemon: ${pokemon?.name}`}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form
-          action={formAction}
-          className='grid grid-cols-1 md:grid-cols-2 gap-4'
-        >
-          <div className='space-y-2 col-span-1'>
-            <Label htmlFor='name'>Name</Label>
-            <Input
-              id='name'
+            ? 'Nuevo pokémon'
+            : pokemon?.name || 'Editar pokémon'}
+        </h1>
+
+        <div className='rounded-md bg-gray-50 p-4 md:p-6'>
+          <pre>{JSON.stringify(form.getValues(), null, 2)}</pre>
+
+          <div className='flex flex-col md:flex-row gap-4 mb-4'>
+            {/* name */}
+
+            <FormField
+              control={form.control}
               name='name'
-              defaultValue={pokemon?.name}
-              required
+              render={({ field }) => (
+                <FormItem className={'w-full'}>
+                  <FormLabel>Nombre</FormLabel>
+                  <FormControl>
+                    <div className={'relative'}>
+                      <Input
+                        className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                        placeholder='Pikachu'
+                        {...field}
+                      />
+                      <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {state?.errors?.name && (
-              <p className='text-red-500 text-sm'>
-                {state.errors.name.join(', ')}
-              </p>
-            )}
-          </div>
-          <div className='space-y-2 col-span-1'>
-            <Label htmlFor='number'>N°</Label>
-            <Input
-              id='number'
+
+            {/* number */}
+
+            <FormField
+              control={form.control}
               name='number'
-              defaultValue={pokemon?.number}
-              required
+              render={({ field }) => (
+                <FormItem className={'w-full'}>
+                  <FormLabel>Número</FormLabel>
+                  <FormControl>
+                    <div className={'relative'}>
+                      <Input
+                        className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                        placeholder='25'
+                        {...field}
+                      />
+                      <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {state?.errors?.number && (
-              <p className='text-red-500 text-sm'>
-                {state.errors.number.join(', ')}
-              </p>
-            )}
           </div>
 
-          <div className='space-y-2 col-span-2'>
-            <Label htmlFor='pokemonPhotoUrl'>Pokemon Photo URL</Label>
-            <Input
-              id='pokemonPhotoUrl'
-              name='pokemonPhotoUrl'
-              defaultValue={pokemon?.pokemonPhotoUrl || ''}
-              type='url'
-              placeholder='https://example.com/pokemon.png'
-            />
-            {state?.errors?.pokemonPhotoUrl && (
-              <p className='text-red-500 text-sm'>
-                {state.errors.pokemonPhotoUrl.join(', ')}
-              </p>
-            )}
-          </div>
+          {/* types */}
 
-          <div className='space-y-2 col-span-2'>
-            <Label htmlFor='type'>Type (comma-separated)</Label>
-            <Input
-              id='type'
-              name='type'
-              defaultValue={pokemon?.type?.join(', ') || ''}
-              placeholder='e.g., Grass, Poison'
-            />
-            {state?.errors?.type && (
-              <p className='text-red-500 text-sm'>
-                {state.errors.type.join(', ')}
-              </p>
+          <FormField
+            control={form.control}
+            name='type'
+            render={({ field }) => (
+              <FormItem className={'w-full mb-4'}>
+                <FormLabel>Tipo</FormLabel>
+                <FormControl>
+                  <div className={'relative'}>
+                    <Input
+                      className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                      placeholder='Eléctrico, venenoso'
+                      value={typeInput}
+                      onChange={(e) => setTypeInput(e.target.value)}
+                      onBlur={() => {
+                        field.onChange(
+                          typeInput
+                            .split(',')
+                            .map((s) => s.trim())
+                            .filter(Boolean)
+                        );
+                      }}
+                    />
+                    <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </div>
+          />
 
-          <div className='space-y-2 col-span-2'>
-            <Label htmlFor='description'>Description</Label>
-            <Textarea
-              id='description'
-              name='description'
-              defaultValue={pokemon?.description || ''}
-              rows={3}
-            />
-            {state?.errors?.description && (
-              <p className='text-red-500 text-sm'>
-                {state.errors.description.join(', ')}
-              </p>
+          {/* description */}
+
+          <FormField
+            control={form.control}
+            name='description'
+            render={({ field }) => (
+              <FormItem className={'mb-4'}>
+                <FormLabel>Descripción</FormLabel>
+                <FormControl>
+                  <div className={'relative'}>
+                    <Textarea
+                      className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                      placeholder='Cuando se enfada, este Pokémon descarga la energía que almacena en el interior de las bolsas de las mejillas.'
+                      {...field}
+                    />
+                    <TextIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </div>
+          />
 
-          <div className='space-y-2 col-span-1'>
-            <Label htmlFor='height'>Height (m)</Label>
-            <Input
-              id='height'
+          <div className='flex flex-col md:flex-row gap-4 mb-6'>
+            {/* height */}
+
+            <FormField
+              control={form.control}
               name='height'
-              defaultValue={pokemon?.height || ''}
-              type='number'
-              step='0.1'
+              render={({ field }) => (
+                <FormItem className={'w-full mb-4'}>
+                  <FormLabel>Altura (m)</FormLabel>
+                  <FormControl>
+                    <div className={'relative'}>
+                      <Input
+                        className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                        placeholder='004'
+                        type='number'
+                        step='0.01'
+                        {...field}
+                      />
+                      <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {state?.errors?.height && (
-              <p className='text-red-500 text-sm'>
-                {state.errors.height.join(', ')}
-              </p>
-            )}
-          </div>
-          <div className='space-y-2 col-span-1'>
-            <Label htmlFor='weight'>Weight (kg)</Label>
-            <Input
-              id='weight'
+
+            {/* weight */}
+
+            <FormField
+              control={form.control}
               name='weight'
-              defaultValue={pokemon?.weight || ''}
-              type='number'
-              step='0.1'
+              render={({ field }) => (
+                <FormItem className={'w-full mb-4'}>
+                  <FormLabel>Peso (kg)</FormLabel>
+                  <FormControl>
+                    <div className={'relative'}>
+                      <Input
+                        className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                        placeholder='6.0'
+                        type='number'
+                        step='0.01'
+                        {...field}
+                      />
+                      <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {state?.errors?.weight && (
-              <p className='text-red-500 text-sm'>
-                {state.errors.weight.join(', ')}
-              </p>
-            )}
           </div>
 
-          <div className='space-y-2 col-span-1'>
-            <Label htmlFor='maleGenderRatio'>♂ Gender ratio (%)</Label>
-            <Input
-              id='maleGenderRatio'
+          <div className='flex flex-col md:flex-row gap-4 mb-6'>
+            {/* maleGenderRatio */}
+
+            <FormField
+              control={form.control}
               name='maleGenderRatio'
-              defaultValue={pokemon?.maleGenderRatio || ''}
-              type='number'
-              min='0'
-              max='100'
+              render={({ field }) => (
+                <FormItem className={'w-full mb-4'}>
+                  <FormLabel>Radio de género masculino (%)</FormLabel>
+                  <FormControl>
+                    <div className={'relative'}>
+                      <Input
+                        className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                        placeholder='50'
+                        type='number'
+                        step='0.01'
+                        {...field}
+                      />
+                      <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {state?.errors?.maleGenderRatio && (
-              <p className='text-red-500 text-sm'>
-                {state.errors.maleGenderRatio.join(', ')}
-              </p>
-            )}
-          </div>
-          <div className='space-y-2 col-span-1'>
-            <Label htmlFor='femaleGenderRatio'>♀ Gender ratio (%)</Label>
-            <Input
-              id='femaleGenderRatio'
+
+            {/* femaleGenderRatio */}
+
+            <FormField
+              control={form.control}
               name='femaleGenderRatio'
-              defaultValue={pokemon?.femaleGenderRatio || ''}
-              type='number'
-              min='0'
-              max='100'
+              render={({ field }) => (
+                <FormItem className={'w-full mb-4'}>
+                  <FormLabel>Radio de género femenino (%)</FormLabel>
+                  <FormControl>
+                    <div className={'relative'}>
+                      <Input
+                        className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                        placeholder='50'
+                        type='number'
+                        step='0.01'
+                        {...field}
+                      />
+                      <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {state?.errors?.femaleGenderRatio && (
-              <p className='text-red-500 text-sm'>
-                {state.errors.femaleGenderRatio.join(', ')}
-              </p>
+          </div>
+
+          {/* abilities */}
+
+          <FormField
+            control={form.control}
+            name='abilities'
+            render={({ field }) => (
+              <FormItem className={'w-full mb-4'}>
+                <FormLabel>Habilidades</FormLabel>
+                <FormControl>
+                  <div className={'relative'}>
+                    <Input
+                      className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                      placeholder='Electricidad estática, pararrayos'
+                      type='text'
+                      value={abilitiesInput}
+                      onChange={(e) => setAbilitiesInput(e.target.value)}
+                      onBlur={() => {
+                        field.onChange(
+                          typeInput
+                            .split(',')
+                            .map((s) => s.trim())
+                            .filter(Boolean)
+                        );
+                      }}
+                    />
+                    <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </div>
+          />
 
-          <div className='space-y-2 col-span-2'>
-            <Label htmlFor='abilities'>Abilities (comma-separated)</Label>
-            <Input
-              id='abilities'
-              name='abilities'
-              defaultValue={pokemon?.abilities?.join(', ') || ''}
-              placeholder='e.g., Overgrow, Chlorophyll'
-            />
-            {state?.errors?.abilities && (
-              <p className='text-red-500 text-sm'>
-                {state.errors.abilities.join(', ')}
-              </p>
+          {/* eggGroups */}
+
+          <FormField
+            control={form.control}
+            name='eggGroups'
+            render={({ field }) => (
+              <FormItem className={'w-full mb-4'}>
+                <FormLabel>Grupos de huevos</FormLabel>
+                <FormControl>
+                  <div className={'relative'}>
+                    <Input
+                      className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                      placeholder='Hada, Campo'
+                      value={eggGroupsInput}
+                      onChange={(e) => setEggGroupsInput(e.target.value)}
+                      onBlur={() => {
+                        field.onChange(
+                          typeInput
+                            .split(',')
+                            .map((s) => s.trim())
+                            .filter(Boolean)
+                        );
+                      }}
+                    />
+                    <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </div>
+          />
 
-          <div className='space-y-2 col-span-2'>
-            <Label htmlFor='eggGroups'>Egg Groups (comma-separated)</Label>
-            <Input
-              id='eggGroups'
-              name='eggGroups'
-              defaultValue={pokemon?.eggGroups?.join(', ') || ''}
-              placeholder='e.g., Monster, Dragon'
-            />
-            {state?.errors?.eggGroups && (
-              <p className='text-red-500 text-sm'>
-                {state.errors.eggGroups.join(', ')}
-              </p>
+          {/* evolutionDescription */}
+
+          <FormField
+            control={form.control}
+            name='evolutionDescription'
+            render={({ field }) => (
+              <FormItem className={'mb-4'}>
+                <FormLabel>Descripción de la evolución</FormLabel>
+                <FormControl>
+                  <div className={'relative'}>
+                    <Textarea
+                      className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                      placeholder='Pikachu evoluciona a Raichu al exponerlo a una Piedra Trueno.'
+                      {...field}
+                    />
+                    <TextIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </div>
+          />
+        </div>
 
-          <div className='space-y-2 col-span-2'>
-            <Label htmlFor='evolutionDescription'>Evolution Description</Label>
-            <Textarea
-              id='evolutionDescription'
-              name='evolutionDescription'
-              defaultValue={pokemon?.evolutionDescription || ''}
-              rows={3}
-            />
-            {state?.errors?.evolutionDescription && (
-              <p className='text-red-500 text-sm'>
-                {state.errors.evolutionDescription.join(', ')}
-              </p>
-            )}
-          </div>
+        <div className='mt-6 flex justify-end gap-4'>
+          <Button
+            variant={'secondary'}
+            type={'button'}
+            role={'button'}
+            onClick={handleCancel}
+          >
+            Cancelar
+          </Button>
 
-          <div className='space-y-2 col-span-2'>
-            <Label htmlFor='evolutionPhotoUrl'>Evolution Photo URL</Label>
-            <Input
-              id='evolutionPhotoUrl'
-              name='evolutionPhotoUrl'
-              defaultValue={pokemon?.evolutionPhotoUrl || ''}
-              type='url'
-              placeholder='https://example.com/evolution.png'
-            />
-            {state?.errors?.evolutionPhotoUrl && (
-              <p className='text-red-500 text-sm'>
-                {state.errors.evolutionPhotoUrl.join(', ')}
-              </p>
-            )}
-          </div>
-
-          {state?.message && (
-            <p className='text-red-500 text-sm col-span-2' aria-live='polite'>
-              {state.message}
-            </p>
-          )}
-
-          <div className='col-span-2 flex justify-end gap-2 mt-4'>
-            <Button
-              type='button'
-              variant='outline'
-              onClick={handleCancel}
-              disabled={isPending}
-            >
-              Cancel
-            </Button>
-            <Button type='submit' disabled={isPending}>
-              {isPending
-                ? 'Saving...'
-                : formType === 'create'
-                ? 'Create Pokemon'
-                : 'Update Pokemon'}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+          <Button type='submit' variant={'default'} disabled={loading}>
+            {loading ? 'Guardando ...' : 'Guardar'}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }
