@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -14,22 +13,12 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  BarcodeIcon,
-  CircleDollarSignIcon,
   TextIcon,
   TicketsIcon,
-  TimerIcon,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useLoading } from '@/lib/store/loading';
 import { Pokemon } from '@/lib/definitions/pokemon';
 import { pokemonSchema } from '@/lib/schemas/pokemon.schema';
@@ -81,14 +70,16 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
     setLoading(true);
     try {
       if (formType === 'edit' && pokemon) {
-        // const response = await updatePokemon(subscription.id, data);
-        // if (response.message && response.icon) {
-        toast('Actualizado correctamente', {
-          // icon: response.icon,
-          icon: 'success',
-          description: 'La suscripción se ha actualizado correctamente.',
-          duration: 5000,
-        });
+        const response = await updatePokemon(pokemon.number, data as Pokemon);
+        if (response.message && response.icon) {
+          if (response.icon === 'success') {
+            toast.success(response.message);
+            router.push(`/pokemon/${response.data?.number}`);
+          }
+          if (response.icon === 'error') {
+            toast.error(response.message);
+          }
+        }
       } else {
         const response = await createPokemon(data as Pokemon);
         if (response.message && response.icon) {
@@ -102,12 +93,8 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
         }
       }
     } catch (error) {
-      toast('Error al guardar el Pokémon', {
-        icon: 'error',
-        description: 'Ha ocurrido un error al guardar el Pokémon.',
-        duration: 5000,
-      });
-      console.error('Error al guardar el Pokémon:', error);
+      toast.error('Error on saving Pokémon. Please try again.');
+      console.error('Error on saving Pokémon:', error);
     } finally {
       setLoading(false);
     }
@@ -126,9 +113,8 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
         </h1>
 
         <div className='rounded-md bg-gray-50 p-4 md:p-6'>
-          <pre>{JSON.stringify(form.getValues(), null, 2)}</pre>
-
           <div className='flex flex-col md:flex-row gap-4 mb-4'>
+
             {/* name */}
 
             <FormField

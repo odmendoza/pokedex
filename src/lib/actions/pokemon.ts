@@ -94,60 +94,98 @@ export async function getRandomPokemonFromAPI(): Promise<{
     }
 }
 
-export async function updatePokemon(id: string, prevState: FormState, formData: FormData): Promise<FormState> {
-    const rawFormData = Object.fromEntries(formData.entries()) as { [k: string]: FormDataEntryValue }
-
-    // Handle array fields (type, abilities, eggGroups)
-    const type = formData.getAll('type').filter(Boolean) as string[]
-    const abilities = formData.getAll('abilities').filter(Boolean) as string[]
-    const eggGroups = formData.getAll('eggGroups').filter(Boolean) as string[]
-
-    const dataToValidate = {
-        ...rawFormData,
-        type,
-        abilities,
-        eggGroups,
-        height: rawFormData.height === '' ? undefined : rawFormData.height,
-        weight: rawFormData.weight === '' ? undefined : rawFormData.weight,
-        maleGenderRatio: rawFormData.maleGenderRatio === '' ? undefined : rawFormData.maleGenderRatio,
-        femaleGenderRatio: rawFormData.femaleGenderRatio === '' ? undefined : rawFormData.femaleGenderRatio,
-    }
-
-    const validatedFields = updatePokemonSchema.safeParse(dataToValidate)
-
-    if (!validatedFields.success) {
-        return {
-            errors: validatedFields.error.flatten().fieldErrors,
-            message: 'Missing Fields. Failed to Update Pokemon.',
-        }
-    }
-
+export async function getPokemons(limit: number, offset: number): Promise<Pokemon[]> {
     try {
-        await prisma.pokemon.update({
-            where: { id },
-            data: validatedFields.data,
-        })
-    } catch (error) {
-        console.error('Database Error:', error)
-        return {
-            message: 'Database Error: Failed to Update Pokemon.',
+        const response = await fetch(
+            `http://localhost:3000/api/pokemon?limit=${limit}&offset=${offset}`, {
+            method: 'GET',
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch Pokémon');
         }
+        return await response.json() as Pokemon[];
+    } catch (error) {
+        console.error('Database Error:', error);
+        return [];
     }
-
-    revalidatePath('/pokemon')
-    revalidatePath(`/pokemon/edit/${id}`)
-    redirect('/pokemon')
 }
 
-export async function deletePokemon(id: string): Promise<FormState> {
+export async function getPokemonById(id: string): Promise<Pokemon | null> {
     try {
-        await prisma.pokemon.delete({
-            where: { id },
-        })
-        revalidatePath('/pokemon')
-        return { message: 'Pokemon deleted successfully.' }
+        const response = await fetch(`http://localhost:3000/api/pokemon/${id}`, {
+            method: 'GET',
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch Pokémon');
+        }
+        return await response.json() as Pokemon;
+    } catch (error) {
+        console.error('Database Error:', error);
+        return null;
+    }
+}
+
+export async function updatePokemon(id: string, data: Pokemon): Promise<{
+    message: string
+    icon: string
+    data?: Pokemon
+    errors?: { [key: string]: string[] }
+}> {
+
+    try {
+        const response = await fetch(
+            `http://localhost:3000/api/pokemon/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            return {
+                icon: 'success',
+                message: 'Pokemon updated successfully.',
+                data: await response.json() as Pokemon,
+            }
+        } else {
+            return {
+                icon: 'error',
+                message: response.statusText || 'Failed to update Pokemon.',
+            }
+        }
+
     } catch (error) {
         console.error('Database Error:', error)
-        return { message: 'Database Error: Failed to Delete Pokemon.' }
+        return {
+            icon: 'error',
+            message: 'Database Error: Failed to update Pokemon.',
+        }
+    }
+}
+
+export async function deletePokemon(id: string): Promise<{
+    message: string
+    icon: string
+    errors?: { [key: string]: string[] }
+}> {
+    try {
+        const response = await fetch(`http://localhost:3000/api/pokemon/${id}`, {
+            method: 'DELETE',
+        });
+        if (response.ok) {
+            return {
+                icon: 'success',
+                message: 'Pokemon deleted successfully.',
+            }
+        } else {
+            return {
+                icon: 'error',
+                message: response.statusText || 'Failed to delete Pokemon.',
+            }
+        }
+    } catch (error) {
+        console.error('Database Error:', error)
+        return {
+            icon: 'error',
+            message: 'Database Error: Failed to delete Pokemon.',
+        }
     }
 }

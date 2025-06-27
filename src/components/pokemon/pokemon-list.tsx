@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,79 +8,38 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-
-interface Pokemon {
-  id: number;
-  name: string;
-  url: string;
-  sprites?: {
-    front_default: string;
-  };
-  types?: Array<{
-    type: {
-      name: string;
-    };
-  }>;
-}
+import { getPokemons } from '@/lib/actions/pokemon';
+import { Pokemon } from '@/lib/definitions/pokemon';
+import { useLoading } from '@/lib/store/loading';
 
 export default function PokemonList() {
   const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { setLoading } = useLoading();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [customPokemons, setCustomPokemons] = useState<Pokemon[]>([]);
   const router = useRouter();
 
-  useEffect(() => {
-    fetchPokemons();
-    loadCustomPokemons();
-  }, [currentPage]);
-
-  const fetchPokemons = async () => {
+  const fetchPokemons = useCallback(async () => {
+    setLoading(true);
     try {
       const offset = (currentPage - 1) * 20;
-      const res = await fetch(
-        `https://pokeapi.co/api/v2/pokemon?limit=20&offset=${offset}`
-      );
-      const data = await res.json();
-
-      const pokemonDetails = await Promise.all(
-        data.results.map(async (pokemon: Pokemon) => {
-          const detailRes = await fetch(pokemon.url);
-          return detailRes.json();
-        })
-      );
-
-      setPokemons(pokemonDetails);
+      const data = await getPokemons(20, offset);
+      setPokemons(data);
     } catch (error) {
       console.error('Error fetching pokemons:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, setLoading]);
 
-  const loadCustomPokemons = () => {
-    const saved = localStorage.getItem('customPokemons');
-    if (saved) {
-      setCustomPokemons(JSON.parse(saved));
-    }
-  };
+  useEffect(() => {
+    fetchPokemons();
+  }, [fetchPokemons]);
 
-  // const deletePokemon = (id: number) => {
-  //   const updated = customPokemons.filter((p) => p.id !== id);
-  //   setCustomPokemons(updated);
-  //   localStorage.setItem('customPokemons', JSON.stringify(updated));
-  // };
-
-  // const allPokemons = [...customPokemons, ...pokemons];
   const allPokemons = [...pokemons];
   const filteredPokemons = allPokemons.filter((pokemon) =>
     pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  if (loading) {
-    return <div className='text-center py-8'>Cargando pokémons...</div>;
-  }
 
   return (
     <div>
@@ -107,7 +66,7 @@ export default function PokemonList() {
               <div className='mx-auto'>
                 <Image
                   src={
-                    pokemon.sprites?.front_default ||
+                    pokemon.pokemonPhotoUrl ||
                     '/placeholder.svg?height=96&width=96'
                   }
                   alt={pokemon.name}
@@ -118,19 +77,15 @@ export default function PokemonList() {
               </div>
               <CardTitle className='capitalize'>{pokemon.name}</CardTitle>
               <div className='flex flex-wrap gap-1 justify-center'>
-                {pokemon.types?.map((type) => (
-                  <Badge
-                    key={type.type.name}
-                    variant='secondary'
-                    className='uppercase'
-                  >
-                    {type.type.name}
+                {pokemon.type?.map((type) => (
+                  <Badge key={type} variant='secondary' className='uppercase'>
+                    {type}
                   </Badge>
                 ))}
               </div>
             </CardHeader>
             <CardContent>
-              <p className='text-center font-bold'>N° {pokemon.id}</p>
+              <p className='text-center font-bold'>N° {pokemon.number}</p>
             </CardContent>
           </Card>
         ))}

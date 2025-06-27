@@ -1,22 +1,13 @@
 import { notFound } from 'next/navigation';
 import PokemonDetail from '@/components/pokemon/pokemon-detail';
+import { getPokemonById } from '@/lib/actions/pokemon';
 
 interface PokemonPageProps {
   params: { id: string };
 }
 
-async function getPokemon(id: string) {
-  try {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
-}
-
 export default async function PokemonPage({ params }: PokemonPageProps) {
-  const pokemon = await getPokemon(params.id);
+  const pokemon = await getPokemonById(params.id);
 
   if (!pokemon) {
     notFound();

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Shuffle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -12,7 +12,7 @@ export default function Pokedex() {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const { loading, setLoading } = useLoading();
 
-  const getRandomPokemon = async () => {
+  const getRandomPokemon = useCallback(async () => {
     setLoading(true);
     try {
       const response = await getRandomPokemonFromAPI();
@@ -22,19 +22,20 @@ export default function Pokedex() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [setLoading]);
+
+  useEffect(() => {
+    getRandomPokemon();
+  }, [getRandomPokemon]);
 
   return (
     <div className='w-full max-w-2xl mx-auto'>
       <div className='bg-gradient-to-b from-red-500 to-red-600 rounded-3xl p-8 shadow-2xl border-8 border-red-700'>
         <div className='flex items-center justify-between mb-8'>
-          {/* Large Blue Button */}
           <button
             className='w-20 h-20 bg-gradient-to-br from-cyan-400 to-cyan-500 rounded-full border-4 border-black shadow-inner hover:from-cyan-300 hover:to-cyan-400 transition-all duration-200 flex items-center justify-center'
           >
           </button>
-
-          {/* Pokéball Button */}
           <div className='w-16 h-16 bg-white rounded-full border-4 border-black shadow-inner relative'>
             <div className='absolute top-0 left-0 w-full h-1/2 bg-red-500 rounded-t-full'></div>
             <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full border-2 border-black'></div>
@@ -44,7 +45,6 @@ export default function Pokedex() {
 
         <div className='flex flex-col md:flex-row gap-4 md:gap-8 justify-center'>
           <div>
-            {/* Main Display Screen */}
             <div className='bg-gray-100 rounded-lg border-4 border-black shadow-inner md:mb-6 aspect-square flex items-center justify-center'>
               {pokemon ? (
                 <div className='relative w-full h-full p-8 flex items-center justify-center'>
@@ -68,7 +68,6 @@ export default function Pokedex() {
             </div>
 
             <div className='hidden md:flex flex-row items-center justify-center gap-2 md:gap-4 md:mb-6'>
-              {/* D-Pad */}
               <div className='relative'>
                 <div className='grid grid-cols-3 gap-1 w-20 h-20'>
                   <div></div>
@@ -90,8 +89,6 @@ export default function Pokedex() {
                   <div></div>
                 </div>
               </div>
-
-              {/* Action Buttons */}
               <div className='flex flex-col gap-3'>
                 <button
                   onClick={getRandomPokemon}
@@ -101,7 +98,7 @@ export default function Pokedex() {
                   Buscar
                 </button>
                 {pokemon && (
-                  <Link href={`/pokemon/${pokemon.id}`}>
+                  <Link href={`/pokemon/${pokemon.number}`}>
                     <button className='w-36 h-12 pokemon-bg-orange pokemon-hover-blue rounded-2xl border-2 border-black shadow-inner flex items-center justify-center'>
                       {' '}
                       Ver más
@@ -112,9 +109,7 @@ export default function Pokedex() {
             </div>
           </div>
 
-          {/* Bottom Control Panel */}
           <div className='w-full md:w-7/12 bg-gradient-to-b from-gray-600 to-gray-700 rounded-2xl p-6 border-4 border-black shadow-inner'>
-            {/* Info Bar */}
             <div className='bg-gradient-to-r from-green-400 to-green-500 rounded-lg p-3 mb-4 border-2 border-black'>
               <div className='space-y-2'>
                 <div className='flex justify-between items-center'>
@@ -150,7 +145,6 @@ export default function Pokedex() {
             </div>
 
             <div className='flex items-center justify-between'>
-              {/* Description Screen */}
               <div className='flex-1'>
                 <div className='bg-gradient-to-br from-green-400 to-green-500 rounded-lg p-4 border-2 border-black min-h-[120px] flex items-center justify-center'>
                   <p className='text-black font-mono text-sm leading-relaxed text-center'>
@@ -164,7 +158,6 @@ export default function Pokedex() {
           </div>
 
           <div className='flex md:hidden flex-row items-center justify-center gap-4 mb-6'>
-            {/* D-Pad */}
             <div className='relative'>
               <div className='grid grid-cols-3 gap-1 w-20 h-20'>
                 <div></div>
@@ -187,7 +180,6 @@ export default function Pokedex() {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className='flex flex-col gap-3'>
               <button
                 onClick={getRandomPokemon}

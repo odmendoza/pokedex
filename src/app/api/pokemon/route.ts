@@ -3,9 +3,16 @@ import prisma from '@/lib/prisma'
 import { pokemonSchema } from '@/lib/schemas/pokemon.schema'
 
 // GET: Find all Pokemon
-export async function GET() {
+export async function GET(request: Request) {
     try {
-        const pokemon = await prisma.pokemon.findMany()
+        const { searchParams } = new URL(request.url)
+        const limit = parseInt(searchParams.get('limit') || '20', 10)
+        const offset = parseInt(searchParams.get('offset') || '0', 10)
+        const pokemon = await prisma.pokemon.findMany({
+            skip: offset,
+            take: limit,
+        })
+
         return NextResponse.json(pokemon, { status: 200 })
     } catch (error) {
         console.error('Error fetching Pokemon:', error)
