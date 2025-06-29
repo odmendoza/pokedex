@@ -25,6 +25,7 @@ model Pokemon {
   eggGroups           String[]
   evolutionDescription String?
   evolutionPhotoUrl   String?
+  evolvesToNumber     String? 
 
   @@index([name])
 }

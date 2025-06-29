@@ -22,6 +22,7 @@ export const pokemonSchema = z.object({
     eggGroups: z.array(z.string()).optional(),
     evolutionDescription: z.string().optional().or(z.literal('')),
     evolutionPhotoUrl: z.string().url('Invalid URL for Evolution photo').optional().or(z.literal('')),
+    evolvesToNumber: z.string().optional().or(z.literal('')),
 })
 
 export const updatePokemonSchema = pokemonSchema.partial()

@@ -15,4 +15,5 @@ export interface Pokemon {
   eggGroups: string[]
   evolutionDescription?: string | null
   evolutionPhotoUrl?: string | null
+  evolvesToNumber?: string | null
 }

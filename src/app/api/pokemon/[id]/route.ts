@@ -7,7 +7,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     try {
         const { id } = params
         const pokemon = await prisma.pokemon.findUnique({
-            where: { number : id },
+            where: { number: id },
         })
 
         if (!pokemon) {
@@ -31,8 +31,19 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
             return NextResponse.json({ errors: validatedData.error.flatten().fieldErrors }, { status: 400 })
         }
 
+        if (validatedData.data.evolvesToNumber) {
+            const evolvesToPokemon = await prisma.pokemon.findUnique({
+                where: { number: validatedData.data.evolvesToNumber },
+                select: { pokemonPhotoUrl: true },
+            })
+
+            if (evolvesToPokemon) {
+                validatedData.data.evolutionPhotoUrl = evolvesToPokemon.pokemonPhotoUrl ?? undefined
+            }
+        }
+
         const updatedPokemon = await prisma.pokemon.update({
-            where: { number : id },
+            where: { number: id }, 
             data: validatedData.data,
         })
         return NextResponse.json(updatedPokemon, { status: 200 })
@@ -47,7 +58,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     try {
         const { id } = params
         await prisma.pokemon.delete({
-            where: { number : id },
+            where: { number: id },
         })
         return new NextResponse(null, { status: 204 })
     } catch (error) {

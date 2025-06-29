@@ -65,6 +65,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
       eggGroups: pokemon?.eggGroups || [],
       evolutionDescription: pokemon?.evolutionDescription || undefined,
       evolutionPhotoUrl: pokemon?.evolutionPhotoUrl || undefined,
+      evolvesToNumber: pokemon?.evolvesToNumber || undefined,
     },
   });
 
@@ -475,6 +476,30 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                       {...field}
                     />
                     <TextIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* evolutionPhotoUrl */}
+
+          <FormField
+            control={form.control}
+            name='evolvesToNumber'
+            render={({ field }) => (
+              <FormItem className={'w-full mb-4'}>
+                <FormLabel>Número de evolución</FormLabel>
+                <FormControl>
+                  <div className={'relative'}>
+                    <Input
+                      className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                      placeholder='Ejemplo: 2'
+                      type='text'
+                      {...field}
+                    />
+                    <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
                   </div>
                 </FormControl>
                 <FormMessage />

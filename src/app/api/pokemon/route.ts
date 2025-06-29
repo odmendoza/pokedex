@@ -33,10 +33,20 @@ export async function POST(req: Request) {
             return NextResponse.json({ errors: validatedData.error.flatten().fieldErrors }, { status: 400 })
         }
 
+        if (validatedData.data.evolvesToNumber) {
+            const evolvesToPokemon = await prisma.pokemon.findUnique({
+                where: { number: validatedData.data.evolvesToNumber },
+                select: { pokemonPhotoUrl: true },
+            })
+
+            if (evolvesToPokemon) {
+                validatedData.data.evolutionPhotoUrl = evolvesToPokemon.pokemonPhotoUrl ?? undefined
+            }
+        }
+
         const newPokemon = await prisma.pokemon.create({
             data: {
                 ...validatedData.data,
-                // Ensure arrays are not undefined if optional
                 type: validatedData.data.type || [],
                 abilities: validatedData.data.abilities || [],
                 eggGroups: validatedData.data.eggGroups || [],
