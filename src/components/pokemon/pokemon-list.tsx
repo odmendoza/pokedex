@@ -58,8 +58,8 @@ export default function PokemonList() {
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
         {filteredPokemons.map((pokemon) => (
           <Card
-            key={pokemon.id}
-            onClick={() => router.push(`/pokemon/${pokemon.id}`)}
+            key={pokemon.number}
+            onClick={() => router.push(`/pokemon/${pokemon.number}`)}
             className='hover:shadow-lg transition-shadow'
           >
             <CardHeader className='text-center'>

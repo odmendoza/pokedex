@@ -11,6 +11,9 @@ export async function GET(request: Request) {
         const pokemon = await prisma.pokemon.findMany({
             skip: offset,
             take: limit,
+            orderBy: {
+                number: 'asc', // Order by Pokemon number
+            },
         })
 
         return NextResponse.json(pokemon, { status: 200 })

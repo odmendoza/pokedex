@@ -145,13 +145,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
         </h1>
 
         <div className='rounded-md bg-gray-50 p-4 md:p-6'>
-
-<pre>
-  {JSON.stringify(form.getValues(), null, 2)}
-</pre>
-
           <div className='flex flex-col md:flex-row gap-4 mb-4'>
-
             {/* name */}
 
             <FormField
@@ -349,7 +343,6 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
           </div>
 
           <div className='flex flex-col md:flex-row gap-4 mb-6'>
-
             {/* maleGenderRatio */}
 
             <FormField
