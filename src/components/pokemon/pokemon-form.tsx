@@ -33,7 +33,11 @@ interface PokemonFormProps {
 export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [blob, setBlob] = useState<PutBlobResult | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    formType === 'edit' && pokemon?.pokemonPhotoUrl
+      ? pokemon.pokemonPhotoUrl
+      : null
+  );
   const { loading, setLoading } = useLoading();
   const router = useRouter();
 
@@ -141,7 +145,13 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
         </h1>
 
         <div className='rounded-md bg-gray-50 p-4 md:p-6'>
+
+<pre>
+  {JSON.stringify(form.getValues(), null, 2)}
+</pre>
+
           <div className='flex flex-col md:flex-row gap-4 mb-4'>
+
             {/* name */}
 
             <FormField
@@ -195,7 +205,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
             control={form.control}
             name='pokemonPhotoUrl'
             render={({}) => (
-              <FormItem className={'w-full mb-4'}>
+              <FormItem className={'w-full mb-2'}>
                 <FormLabel>Foto del Pokémon</FormLabel>
                 <FormControl>
                   <div className={'relative'}>
@@ -213,15 +223,6 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                         }
                       }}
                     />
-                    {previewUrl && (
-                      <Image
-                        width={128}
-                        height={128}
-                        src={previewUrl}
-                        alt='Miniatura'
-                        className='mt-2 w-32 h-32 object-contain rounded border'
-                      />
-                    )}
                     <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
                   </div>
                 </FormControl>
@@ -230,7 +231,17 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
             )}
           />
 
-          {/* types */}
+          {previewUrl && (
+            <Image
+              width={128}
+              height={128}
+              src={previewUrl}
+              alt='Miniatura'
+              className='mb-4 w-32 h-32 object-contain rounded border'
+            />
+          )}
+
+          {/* type */}
 
           <FormField
             control={form.control}
@@ -286,7 +297,6 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
           />
 
           <div className='flex flex-col md:flex-row gap-4 mb-6'>
-            
             {/* height */}
 
             <FormField
@@ -339,6 +349,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
           </div>
 
           <div className='flex flex-col md:flex-row gap-4 mb-6'>
+
             {/* maleGenderRatio */}
 
             <FormField
@@ -408,7 +419,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                       onChange={(e) => setAbilitiesInput(e.target.value)}
                       onBlur={() => {
                         field.onChange(
-                          typeInput
+                          abilitiesInput
                             .split(',')
                             .map((s) => s.trim())
                             .filter(Boolean)
@@ -440,7 +451,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                       onChange={(e) => setEggGroupsInput(e.target.value)}
                       onBlur={() => {
                         field.onChange(
-                          typeInput
+                          eggGroupsInput
                             .split(',')
                             .map((s) => s.trim())
                             .filter(Boolean)

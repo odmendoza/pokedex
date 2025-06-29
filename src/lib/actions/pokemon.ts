@@ -1,30 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-import prisma from '@/lib/prisma'
-import { updatePokemonSchema } from '@/lib/schemas/pokemon.schema'
 import { Pokemon } from '../definitions/pokemon'
-
-type FormState = {
-    errors?: {
-        name?: string[]
-        number?: string[]
-        pokemonPhotoUrl?: string[]
-        type?: string[]
-        description?: string[]
-        height?: string[]
-        weight?: string[]
-        maleGenderRatio?: string[]
-        femaleGenderRatio?: string[]
-        abilities?: string[]
-        eggGroups?: string[]
-        evolutionDescription?: string[]
-        evolutionPhotoUrl?: string[]
-        _form?: string[]
-    }
-    message?: string | null
-}
 
 export async function createPokemon(data: Pokemon): Promise<{
     message: string
@@ -32,6 +8,7 @@ export async function createPokemon(data: Pokemon): Promise<{
     data?: Pokemon
     errors?: { [key: string]: string[] }
 }> {
+    console.log('Creating Pokemon with data:', JSON.stringify(data))
 
     try {
         const response = await fetch('http://localhost:3000/api/pokemon', {
@@ -131,6 +108,8 @@ export async function updatePokemon(id: string, data: Pokemon): Promise<{
     data?: Pokemon
     errors?: { [key: string]: string[] }
 }> {
+
+    console.log('Updating Pokemon with data:', JSON.stringify(data))
 
     try {
         const response = await fetch(

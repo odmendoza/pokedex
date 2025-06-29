@@ -47,7 +47,7 @@ export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
           </Button>
         </Link>
         <div className='flex items-center gap-2'>
-          <Link href={`/pokemon/edit/${pokemon.id}`}>
+          <Link href={`/pokemon/edit/${pokemon.number}`}>
             <Button>
               <Edit className='w-4 h-4 md:mr-2' />
               <span className='hidden md:flex'>Editar</span>
