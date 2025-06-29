@@ -1,6 +1,8 @@
 'use server'
 
-import { Pokemon } from '../definitions/pokemon'
+import { Pokemon } from '../definitions/pokemon';
+
+const API_URL = process.env.API_URL!;
 
 export async function createPokemon(data: Pokemon): Promise<{
     message: string
@@ -11,7 +13,7 @@ export async function createPokemon(data: Pokemon): Promise<{
     console.log('Creating Pokemon with data:', JSON.stringify(data))
 
     try {
-        const response = await fetch('http://localhost:3000/api/pokemon', {
+        const response = await fetch(`${API_URL}/api/pokemon`, {
             method: 'POST',
             body: JSON.stringify(data),
         });
@@ -45,7 +47,7 @@ export async function getRandomPokemonFromAPI(): Promise<{
     errors?: { [key: string]: string[] }
 }> {
     try {
-        const response = await fetch('http://localhost:3000/api/pokemon/random', {
+        const response = await fetch(`${API_URL}/api/pokemon/random`, {
             method: 'GET',
         });
 
@@ -74,7 +76,7 @@ export async function getRandomPokemonFromAPI(): Promise<{
 export async function getPokemons(limit: number, offset: number): Promise<Pokemon[]> {
     try {
         const response = await fetch(
-            `http://localhost:3000/api/pokemon?limit=${limit}&offset=${offset}`, {
+            `${API_URL}/api/pokemon?limit=${limit}&offset=${offset}`, {
             method: 'GET',
         });
         if (!response.ok) {
@@ -89,7 +91,7 @@ export async function getPokemons(limit: number, offset: number): Promise<Pokemo
 
 export async function getPokemonById(id: string): Promise<Pokemon | null> {
     try {
-        const response = await fetch(`http://localhost:3000/api/pokemon/${id}`, {
+        const response = await fetch(`${API_URL}/api/pokemon/${id}`, {
             method: 'GET',
         });
         if (!response.ok) {
@@ -113,7 +115,7 @@ export async function updatePokemon(id: string, data: Pokemon): Promise<{
 
     try {
         const response = await fetch(
-            `http://localhost:3000/api/pokemon/${id}`, {
+            `${API_URL}/api/pokemon/${id}`, {
             method: 'PUT',
             body: JSON.stringify(data),
         });
@@ -146,7 +148,7 @@ export async function deletePokemon(id: string): Promise<{
     errors?: { [key: string]: string[] }
 }> {
     try {
-        const response = await fetch(`http://localhost:3000/api/pokemon/${id}`, {
+        const response = await fetch(`${API_URL}/api/pokemon/${id}`, {
             method: 'DELETE',
         });
         if (response.ok) {
