@@ -88,12 +88,13 @@ export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
       </div>
 
       <div className='grid lg:grid-cols-2 gap-8'>
-        <div className='flex justify-center gap-4 md:mb-6 pokemon-bg-blue/10 backdrop-blur supports-[backdrop-filter]:bg-white/10 sticky top-0 z-50 rounded-lg shadow-md'>
+        <div className='flex items-center justify-center pokemon-bg-blue/10 backdrop-blur supports-[backdrop-filter]:bg-white/10 sticky rounded-lg shadow-md'>
           <Image
             src={pokemon.pokemonPhotoUrl || '/placeholder.svg'}
             alt={`${pokemon.name} front`}
             width={256}
             height={256}
+            className='drop-shadow-2xl shadow-black/40'
           />
         </div>
         <div className='space-y-6'>
@@ -139,8 +140,8 @@ export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
                 <div>
                   <h3 className='font-semibold'>Proporción de género</h3>
                   <p>
-                    {pokemon.maleGenderRatio}% ♂ -{' '}
-                    {pokemon.femaleGenderRatio}% ♀
+                    {pokemon.maleGenderRatio}% ♂ - {pokemon.femaleGenderRatio}%
+                    ♀
                   </p>
                 </div>
               </div>
@@ -168,7 +169,8 @@ export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
               <div className='flex flex-col'>
                 <h3 className='font-semibold'>Evolución</h3>
                 <p className='text-gray-700'>
-                  {pokemon.description || 'No hay descripción disponible.'}
+                  {pokemon.evolutionDescription ||
+                    'No hay descripción disponible.'}
                 </p>
               </div>
             </CardContent>

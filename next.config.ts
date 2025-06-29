@@ -6,19 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'raw.githubusercontent.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'pokeapi.co',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'cdn2.bulbagarden.net',
+        hostname: 'eklcg3prqkrfm8ph.public.blob.vercel-storage.com',
         port: '',
         pathname: '/**',
       },

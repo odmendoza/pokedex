@@ -12,10 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  TextIcon,
-  TicketsIcon,
-} from 'lucide-react';
+import { TextIcon, TicketsIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -24,7 +21,9 @@ import { Pokemon } from '@/lib/definitions/pokemon';
 import { pokemonSchema } from '@/lib/schemas/pokemon.schema';
 import { toast } from 'sonner';
 import { createPokemon, updatePokemon } from '@/lib/actions/pokemon';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import type { PutBlobResult } from '@vercel/blob';
+import Image from 'next/image';
 
 interface PokemonFormProps {
   pokemon?: Pokemon;
@@ -32,6 +31,9 @@ interface PokemonFormProps {
 }
 
 export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
+  const inputFileRef = useRef<HTMLInputElement>(null);
+  const [blob, setBlob] = useState<PutBlobResult | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { loading, setLoading } = useLoading();
   const router = useRouter();
 
@@ -66,9 +68,35 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
     router.push('/pokemon');
   };
 
+  const handleUpload = async () => {
+    if (!inputFileRef.current?.files) {
+      throw new Error('No file selected');
+    }
+
+    const file = inputFileRef.current.files[0];
+
+    const response = await fetch(`/api/pokemon/upload?filename=${file.name}`, {
+      method: 'POST',
+      body: file,
+    });
+
+    const newBlob = (await response.json()) as PutBlobResult;
+
+    setBlob(newBlob);
+    return newBlob;
+  };
+
   async function onSubmit(data: z.infer<typeof pokemonSchema>) {
     setLoading(true);
     try {
+      if (
+        inputFileRef.current?.files &&
+        inputFileRef.current.files.length > 0
+      ) {
+        const uploadedBlob = await handleUpload();
+        data.pokemonPhotoUrl = uploadedBlob?.url || data.pokemonPhotoUrl;
+      }
+
       if (formType === 'edit' && pokemon) {
         const response = await updatePokemon(pokemon.number, data as Pokemon);
         if (response.message && response.icon) {
@@ -114,7 +142,6 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
 
         <div className='rounded-md bg-gray-50 p-4 md:p-6'>
           <div className='flex flex-col md:flex-row gap-4 mb-4'>
-
             {/* name */}
 
             <FormField
@@ -161,6 +188,47 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
               )}
             />
           </div>
+
+          {/* pokemonPhotoUrl */}
+
+          <FormField
+            control={form.control}
+            name='pokemonPhotoUrl'
+            render={({}) => (
+              <FormItem className={'w-full mb-4'}>
+                <FormLabel>Foto del Pokémon</FormLabel>
+                <FormControl>
+                  <div className={'relative'}>
+                    <Input
+                      className='peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500'
+                      ref={inputFileRef}
+                      type='file'
+                      accept='image/jpeg, image/png, image/webp'
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setPreviewUrl(URL.createObjectURL(file));
+                        } else {
+                          setPreviewUrl(null);
+                        }
+                      }}
+                    />
+                    {previewUrl && (
+                      <Image
+                        width={128}
+                        height={128}
+                        src={previewUrl}
+                        alt='Miniatura'
+                        className='mt-2 w-32 h-32 object-contain rounded border'
+                      />
+                    )}
+                    <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {/* types */}
 
@@ -218,6 +286,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
           />
 
           <div className='flex flex-col md:flex-row gap-4 mb-6'>
+            
             {/* height */}
 
             <FormField
