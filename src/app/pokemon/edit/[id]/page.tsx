@@ -2,14 +2,13 @@ import PokemonForm from '@/components/pokemon/pokemon-form';
 import { getPokemonById } from '@/lib/actions/pokemon';
 import { notFound } from 'next/navigation';
 
-interface EditPokemonPageProps {
-  params: { id: string };
-}
-
 export default async function EditPokemonPage({
   params,
-}: EditPokemonPageProps) {
-  const pokemon = await getPokemonById(params.id);
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const pokemon = await getPokemonById(id);
 
   if (!pokemon) {
     notFound();

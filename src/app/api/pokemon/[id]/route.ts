@@ -1,11 +1,13 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma'
 import { updatePokemonSchema } from '@/lib/schemas/pokemon.schema'
 
 // GET: Find one Pokemon by ID
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest) {
     try {
-        const { id } = params
+        const url = new URL(request.url);
+        const id = url.pathname.split('/').pop();
+
         const pokemon = await prisma.pokemon.findUnique({
             where: { number: id },
         })
@@ -21,11 +23,12 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 }
 
 // PUT: Update a Pokemon by ID
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest) {
     try {
-        const { id } = params
-        const body = await req.json()
-        const validatedData = updatePokemonSchema.safeParse(body)
+        const url = new URL(request.url);
+        const id = url.pathname.split('/').pop();
+        const body = await request.json();
+        const validatedData = updatePokemonSchema.safeParse(body);
 
         if (!validatedData.success) {
             return NextResponse.json({ errors: validatedData.error.flatten().fieldErrors }, { status: 400 })
@@ -43,7 +46,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         }
 
         const updatedPokemon = await prisma.pokemon.update({
-            where: { number: id }, 
+            where: { number: id },
             data: validatedData.data,
         })
         return NextResponse.json(updatedPokemon, { status: 200 })
@@ -54,9 +57,11 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 }
 
 // DELETE: Delete a Pokemon by ID
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest) {
     try {
-        const { id } = params
+        const url = new URL(request.url);
+        const id = url.pathname.split('/').pop();
+
         await prisma.pokemon.delete({
             where: { number: id },
         })

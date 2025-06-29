@@ -32,7 +32,6 @@ interface PokemonFormProps {
 
 export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const [blob, setBlob] = useState<PutBlobResult | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     formType === 'edit' && pokemon?.pokemonPhotoUrl
       ? pokemon.pokemonPhotoUrl
@@ -87,7 +86,6 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
 
     const newBlob = (await response.json()) as PutBlobResult;
 
-    setBlob(newBlob);
     return newBlob;
   };
 
