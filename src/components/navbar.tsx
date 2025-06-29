@@ -101,7 +101,6 @@ export default function Navbar() {
               size='sm'
               className='w-full justify-start pokemon-text-primary pokemon-hover-yellow'
               onClick={lintTo('/')}
-              asChild
             >
               <Home className='w-4 h-4 mr-3' />
               Inicio
@@ -111,7 +110,6 @@ export default function Navbar() {
               size='sm'
               className='w-full justify-start pokemon-text-primary pokemon-hover-yellow'
               onClick={lintTo('/pokemon')}
-              asChild
             >
               <List className='w-4 h-4 mr-3' />
               Lista de Pokémons
