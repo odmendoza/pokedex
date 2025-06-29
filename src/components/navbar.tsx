@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Home, List, Zap, Menu, X } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -15,6 +17,16 @@ export default function Navbar() {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+  };
+
+  const lintTo = (href: string) => () => {
+    try {
+      router.push(href);
+    } catch (error) {
+      console.error('Navigation error:', error);
+    } finally {
+      closeMenu();
+    }
   };
 
   return (
@@ -84,30 +96,26 @@ export default function Navbar() {
           }`}
         >
           <div className='flex flex-col space-y-2 pb-4 border-t border-gray-200 pt-4'>
-            <Link href='/' passHref legacyBehavior>
-              <a onClick={closeMenu}>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='w-full justify-start pokemon-text-primary pokemon-hover-yellow'
-                >
-                  <Home className='w-4 h-4 mr-3' />
-                  Inicio
-                </Button>
-              </a>
-            </Link>
-            <Link href='/pokemon' passHref legacyBehavior>
-              <a onClick={closeMenu}>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='w-full justify-start pokemon-text-primary pokemon-hover-yellow'
-                >
-                  <List className='w-4 h-4 mr-3' />
-                  Lista de Pokémons
-                </Button>
-              </a>
-            </Link>
+            <Button
+              variant='ghost'
+              size='sm'
+              className='w-full justify-start pokemon-text-primary pokemon-hover-yellow'
+              onClick={lintTo('/')}
+              asChild
+            >
+              <Home className='w-4 h-4 mr-3' />
+              Inicio
+            </Button>
+            <Button
+              variant='ghost'
+              size='sm'
+              className='w-full justify-start pokemon-text-primary pokemon-hover-yellow'
+              onClick={lintTo('/pokemon')}
+              asChild
+            >
+              <List className='w-4 h-4 mr-3' />
+              Lista de Pokémons
+            </Button>
           </div>
         </div>
       </div>
