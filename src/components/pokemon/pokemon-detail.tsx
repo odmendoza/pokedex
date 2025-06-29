@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -18,6 +18,8 @@ import { Pokemon } from '@/lib/definitions/pokemon';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { deletePokemon } from '@/lib/actions/pokemon';
+import { useLoading } from '@/lib/store/loading';
+import { useRouter } from 'next/navigation';
 
 interface PokemonDetailProps {
   pokemon: Pokemon;
@@ -25,15 +27,26 @@ interface PokemonDetailProps {
 
 export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
   const [open, setOpen] = useState(false);
+  const { setLoading } = useLoading();
+  const router = useRouter();
 
   const _deletePokemon = async (id: string) => {
-    const response = await deletePokemon(id);
-    if (response.message && response.icon) {
-      if (response.icon === 'success') {
-        toast.success(response.message);
-      } else {
-        toast.error(response.message);
+    setLoading(true);
+    try {
+      const response = await deletePokemon(id);
+      if (response.message && response.icon) {
+        if (response.icon === 'success') {
+          toast.success(response.message);
+          router.push('/pokemon/');
+        } else {
+          toast.error(response.message);
+        }
       }
+    } catch (error) {
+      console.error('Error deleting Pokémon:', error);
+      toast.error('Error on deleting Pokémon');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -172,6 +185,35 @@ export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
                   {pokemon.evolutionDescription ||
                     'No hay descripción disponible.'}
                 </p>
+                <div className='flex flex-wrap gap-2 mt-2 items-center justify-center'>
+                  <Image
+                    src={pokemon.pokemonPhotoUrl || '/logo.png'}
+                    alt={pokemon.name}
+                    width={64}
+                    height={64}
+                  />
+
+                  <ArrowRight className='w-6 h-6 text-gray-400' />
+
+                  {pokemon.evolvesToNumber ? (
+                    <Link href={`/pokemon/${pokemon.evolvesToNumber}`}>
+                      <Image
+                        src={pokemon.evolutionPhotoUrl || '/logo.png'}
+                        alt={`${pokemon.name} evolution`}
+                        width={64}
+                        height={64}
+                        className='cursor-pointer transition-transform hover:scale-110'
+                      />
+                    </Link>
+                  ) : (
+                    <Image
+                      src={pokemon.evolutionPhotoUrl || '/logo.png'}
+                      alt={`${pokemon.name} evolution`}
+                      width={64}
+                      height={64}
+                    />
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
