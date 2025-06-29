@@ -189,7 +189,7 @@ export default function Pokedex() {
                 Buscar
               </button>
               {pokemon && (
-                <Link href={`/pokemon/${pokemon.id}`}>
+                <Link href={`/pokemon/${pokemon.number}`}>
                   <button className='w-36 h-12 pokemon-bg-orange pokemon-hover-blue rounded-2xl border-2 border-black shadow-inner flex items-center justify-center'>
                     {' '}
                     Ver más

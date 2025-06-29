@@ -84,25 +84,29 @@ export default function Navbar() {
           }`}
         >
           <div className='flex flex-col space-y-2 pb-4 border-t border-gray-200 pt-4'>
-            <Link href='/' onClick={closeMenu}>
-              <Button
-                variant='ghost'
-                size='sm'
-                className='w-full justify-start pokemon-text-primary pokemon-hover-yellow'
-              >
-                <Home className='w-4 h-4 mr-3' />
-                Inicio
-              </Button>
+            <Link href='/' passHref legacyBehavior>
+              <a onClick={closeMenu}>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='w-full justify-start pokemon-text-primary pokemon-hover-yellow'
+                >
+                  <Home className='w-4 h-4 mr-3' />
+                  Inicio
+                </Button>
+              </a>
             </Link>
-            <Link href='/pokemon' onClick={closeMenu}>
-              <Button
-                variant='ghost'
-                size='sm'
-                className='w-full justify-start pokemon-text-primary pokemon-hover-yellow'
-              >
-                <List className='w-4 h-4 mr-3' />
-                Lista de Pokémons
-              </Button>
+            <Link href='/pokemon' passHref legacyBehavior>
+              <a onClick={closeMenu}>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='w-full justify-start pokemon-text-primary pokemon-hover-yellow'
+                >
+                  <List className='w-4 h-4 mr-3' />
+                  Lista de Pokémons
+                </Button>
+              </a>
             </Link>
           </div>
         </div>
