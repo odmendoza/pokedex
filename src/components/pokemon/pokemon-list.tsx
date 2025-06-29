@@ -67,7 +67,7 @@ export default function PokemonList() {
                 <Image
                   src={
                     pokemon.pokemonPhotoUrl ||
-                    '/placeholder.svg?height=96&width=96'
+                    '/logo.png'
                   }
                   alt={pokemon.name}
                   width={120}

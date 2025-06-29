@@ -90,7 +90,7 @@ export default function PokemonDetail({ pokemon }: PokemonDetailProps) {
       <div className='grid lg:grid-cols-2 gap-8'>
         <div className='flex items-center justify-center pokemon-bg-blue/10 backdrop-blur supports-[backdrop-filter]:bg-white/10 sticky rounded-lg shadow-md'>
           <Image
-            src={pokemon.pokemonPhotoUrl || '/placeholder.svg'}
+            src={pokemon.pokemonPhotoUrl || '/logo.png'}
             alt={`${pokemon.name} front`}
             width={256}
             height={256}

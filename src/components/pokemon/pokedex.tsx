@@ -49,7 +49,7 @@ export default function Pokedex() {
               {pokemon ? (
                 <div className='relative w-full h-full p-8 flex items-center justify-center'>
                   <Image
-                    src={pokemon.pokemonPhotoUrl || '/placeholder.png'}
+                    src={pokemon.pokemonPhotoUrl || '/logo.png'}
                     alt={pokemon.name}
                     width={256}
                     height={256}
