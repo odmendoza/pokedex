@@ -12,7 +12,20 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TextIcon, TicketsIcon } from 'lucide-react';
+import {
+  ArrowUp10Icon,
+  AtomIcon,
+  GroupIcon,
+  HashIcon,
+  ImageIcon,
+  MarsIcon,
+  RulerIcon,
+  TextIcon,
+  UserIcon,
+  VenusIcon,
+  WeightIcon,
+  ZapIcon,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -160,7 +173,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                         placeholder='Pikachu'
                         {...field}
                       />
-                      <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                      <UserIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -183,7 +196,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                         placeholder='25'
                         {...field}
                       />
-                      <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                      <HashIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -216,7 +229,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                         }
                       }}
                     />
-                    <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                    <ImageIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -258,7 +271,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                         );
                       }}
                     />
-                    <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                    <AtomIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -307,7 +320,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                         step='0.01'
                         {...field}
                       />
-                      <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                      <RulerIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -332,7 +345,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                         step='0.01'
                         {...field}
                       />
-                      <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                      <WeightIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -359,7 +372,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                         step='0.01'
                         {...field}
                       />
-                      <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                      <MarsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -384,7 +397,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                         step='0.01'
                         {...field}
                       />
-                      <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                      <VenusIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -418,7 +431,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                         );
                       }}
                     />
-                    <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                    <ZapIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -450,7 +463,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                         );
                       }}
                     />
-                    <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                    <GroupIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
                   </div>
                 </FormControl>
                 <FormMessage />
@@ -481,7 +494,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
             )}
           />
 
-          {/* evolutionPhotoUrl */}
+          {/* evolvesToNumber */}
 
           <FormField
             control={form.control}
@@ -497,7 +510,7 @@ export default function PokemonForm({ pokemon, formType }: PokemonFormProps) {
                       type='text'
                       {...field}
                     />
-                    <TicketsIcon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
+                    <ArrowUp10Icon className='pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500' />
                   </div>
                 </FormControl>
                 <FormMessage />
